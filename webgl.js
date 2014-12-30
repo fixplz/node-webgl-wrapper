@@ -1,19 +1,37 @@
 "use strict";
 
-var WebGLContext = require('./build/Release/webgl.node').WebGLContext;
-module.exports = WebGLContext;
+var util = require('util')
 
-var gl = WebGLContext.prototype;
+var WebGLBase = require('./build/Release/webgl.node').WebGLContext;
+exports.WebGLBase = WebGLBase;
 
 
-gl.WebGLProgram=function (_) { this._ = _; }
-gl.WebGLShader=function (_) { this._ = _; }
-gl.WebGLBuffer=function (_) { this._ = _; }
-gl.WebGLFramebuffer=function (_) { this._ = _; }
-gl.WebGLRenderbuffer=function (_) { this._ = _; }
-gl.WebGLTexture=function (_) { this._ = _; }
-gl.WebGLActiveInfo=function (_) { this._=_; this.size=_.size; this.type=_.type; this.name=_.name; }
-gl.WebGLUniformLocation=function (_) { this._ = _; }
+util.inherits(WebGLSafe, WebGLBase)
+function WebGLSafe(w, h) {
+  var obj = new WebGLBase(w, h);
+  obj.__proto__ = WebGLSafe.prototype;
+  return obj;
+}
+
+exports.WebGLSafe = WebGLSafe;
+
+function WebGLProgram(_) { this._ = _; }
+function WebGLShader(_) { this._ = _; }
+function WebGLBuffer(_) { this._ = _; }
+function WebGLFramebuffer(_) { this._ = _; }
+function WebGLRenderbuffer(_) { this._ = _; }
+function WebGLTexture(_) { this._ = _; }
+function WebGLActiveInfo(_) { this._=_; this.size=_.size; this.type=_.type; this.name=_.name; }
+function WebGLUniformLocation(_) { this._ = _; }
+
+exports.WebGLProgram = WebGLProgram;
+exports.WebGLShader = WebGLShader;
+exports.WebGLBuffer = WebGLBuffer;
+exports.WebGLFramebuffer = WebGLFramebuffer;
+exports.WebGLRenderbuffer = WebGLRenderbuffer;
+exports.WebGLTexture = WebGLTexture;
+exports.WebGLActiveInfo = WebGLActiveInfo;
+exports.WebGLUniformLocation = WebGLUniformLocation;
 
 
 function wrapObject(val, type) {
@@ -37,584 +55,513 @@ function asInt32Array(val) {
   return new Int32Array(val);
 }
 
-////////////////////////////////////////////////////////////////////////////////
 
-var _getSupportedExtensions = gl.getSupportedExtensions;
-gl.getSupportedExtensions = function getSupportedExtensions() {
-  return _getSupportedExtensions.call(this).split(" ");
+var safep = WebGLSafe.prototype;
+var basep = WebGLBase.prototype;
+
+safep.getSupportedExtensions = function getSupportedExtensions() {
+  return basep.getSupportedExtensions.call(this).split(" ");
 }
 
-var _getExtension = gl.getExtension;
-gl.getExtension = function getExtension(name) {
+safep.getExtension = function getExtension(name) {
   if (!(arguments.length === 1 && typeof name === "string")) {
     throw new TypeError('Expected getExtension(string name)');
   }
-  return _getExtension.call(this, name);
+  return basep.getExtension.call(this, name);
 }
 
-var _activeTexture = gl.activeTexture;
-gl.activeTexture = function activeTexture(texture) {
+safep.activeTexture = function activeTexture(texture) {
   if (!(arguments.length === 1 && typeof texture === "number")) {
     throw new TypeError('Expected activeTexture(number texture)');
   }
-  return _activeTexture.call(this, texture);
+  return basep.activeTexture.call(this, texture);
 }
 
-var _attachShader = gl.attachShader;
-gl.attachShader = function attachShader(program, shader) {
-  if (!(arguments.length === 2 && (program === null || program instanceof gl.WebGLProgram) && (shader === null || shader instanceof gl.WebGLShader))) {
+safep.attachShader = function attachShader(program, shader) {
+  if (!(arguments.length === 2 && (program === null || program instanceof WebGLProgram) && (shader === null || shader instanceof WebGLShader))) {
     throw new TypeError('Expected attachShader(WebGLProgram program, WebGLShader shader)');
   }
-  return _attachShader.call(this, program ? program._ : 0, shader ? shader._ : 0);
+  return basep.attachShader.call(this, program ? program._ : 0, shader ? shader._ : 0);
 }
 
-var _bindAttribLocation = gl.bindAttribLocation;
-gl.bindAttribLocation = function bindAttribLocation(program, index, name) {
-  if (!(arguments.length === 3 && (program === null || program instanceof gl.WebGLProgram) && typeof index === "number" && typeof name === "string")) {
+safep.bindAttribLocation = function bindAttribLocation(program, index, name) {
+  if (!(arguments.length === 3 && (program === null || program instanceof WebGLProgram) && typeof index === "number" && typeof name === "string")) {
     throw new TypeError('Expected bindAttribLocation(WebGLProgram program, number index, string name)');
   }
-  return _bindAttribLocation.call(this, program ? program._ : 0, index, name);
+  return basep.bindAttribLocation.call(this, program ? program._ : 0, index, name);
 }
 
-var _bindBuffer = gl.bindBuffer;
-gl.bindBuffer = function bindBuffer(target, buffer) {
-  if (!(arguments.length === 2 && typeof target === "number" && (buffer === null || buffer instanceof gl.WebGLBuffer))) {
+safep.bindBuffer = function bindBuffer(target, buffer) {
+  if (!(arguments.length === 2 && typeof target === "number" && (buffer === null || buffer instanceof WebGLBuffer))) {
     throw new TypeError('Expected bindBuffer(number target, WebGLBuffer buffer)');
   }
-  return _bindBuffer.call(this, target, buffer ? buffer._ : 0);
+  return basep.bindBuffer.call(this, target, buffer ? buffer._ : 0);
 }
 
-var _bindFramebuffer = gl.bindFramebuffer;
-gl.bindFramebuffer = function bindFramebuffer(target, framebuffer) {
-  if (!(arguments.length === 2 && typeof target === "number" && (framebuffer === null || framebuffer instanceof gl.WebGLFramebuffer))) {
+safep.bindFramebuffer = function bindFramebuffer(target, framebuffer) {
+  if (!(arguments.length === 2 && typeof target === "number" && (framebuffer === null || framebuffer instanceof WebGLFramebuffer))) {
     throw new TypeError('Expected bindFramebuffer(number target, WebGLFramebuffer framebuffer)');
   }
-  return _bindFramebuffer.call(this, target, framebuffer ? framebuffer._ : 0);
+  return basep.bindFramebuffer.call(this, target, framebuffer ? framebuffer._ : 0);
 }
 
-var _bindRenderbuffer = gl.bindRenderbuffer;
-gl.bindRenderbuffer = function bindRenderbuffer(target, renderbuffer) {
-  if (!(arguments.length === 2 && typeof target === "number" && (renderbuffer === null || renderbuffer instanceof gl.WebGLRenderbuffer))) {
+safep.bindRenderbuffer = function bindRenderbuffer(target, renderbuffer) {
+  if (!(arguments.length === 2 && typeof target === "number" && (renderbuffer === null || renderbuffer instanceof WebGLRenderbuffer))) {
     throw new TypeError('Expected bindRenderbuffer(number target, WebGLRenderbuffer renderbuffer)');
   }
-  return _bindRenderbuffer.call(this, target, renderbuffer ? renderbuffer._ : 0);
+  return basep.bindRenderbuffer.call(this, target, renderbuffer ? renderbuffer._ : 0);
 }
 
-var _bindTexture = gl.bindTexture;
-gl.bindTexture = function bindTexture(target, texture) {
-  if (!(arguments.length === 2 && typeof target === "number" && (texture === null || texture instanceof gl.WebGLTexture))) {
+safep.bindTexture = function bindTexture(target, texture) {
+  if (!(arguments.length === 2 && typeof target === "number" && (texture === null || texture instanceof WebGLTexture))) {
     throw new TypeError('Expected bindTexture(number target, WebGLTexture texture)');
   }
-  return _bindTexture.call(this, target, texture ? texture._ : 0);
+  return basep.bindTexture.call(this, target, texture ? texture._ : 0);
 }
 
-var _blendColor = gl.blendColor;
-gl.blendColor = function blendColor(red, green, blue, alpha) {
+safep.blendColor = function blendColor(red, green, blue, alpha) {
   if (!(arguments.length === 4 && typeof red === "number" && typeof green === "number" && typeof blue === "number" && typeof alpha === "number")) {
     throw new TypeError('Expected blendColor(number red, number green, number blue, number alpha)');
   }
-  return _blendColor.call(this, red, green, blue, alpha);
+  return basep.blendColor.call(this, red, green, blue, alpha);
 }
 
-var _blendEquation = gl.blendEquation;
-gl.blendEquation = function blendEquation(mode) {
+safep.blendEquation = function blendEquation(mode) {
   if (!(arguments.length === 1 && typeof mode === "number")) {
     throw new TypeError('Expected blendEquation(number mode)');
   }
-  return _blendEquation.call(this, mode);
+  return basep.blendEquation.call(this, mode);
 }
 
-var _blendEquationSeparate = gl.blendEquationSeparate;
-gl.blendEquationSeparate = function blendEquationSeparate(modeRGB, modeAlpha) {
+safep.blendEquationSeparate = function blendEquationSeparate(modeRGB, modeAlpha) {
   if (!(arguments.length === 2 && typeof modeRGB === "number" && typeof modeAlpha === "number")) {
     throw new TypeError('Expected blendEquationSeparate(number modeRGB, number modeAlpha)');
   }
-  return _blendEquationSeparate.call(this, modeRGB, modeAlpha);
+  return basep.blendEquationSeparate.call(this, modeRGB, modeAlpha);
 }
 
-var _blendFunc = gl.blendFunc;
-gl.blendFunc = function blendFunc(sfactor, dfactor) {
+safep.blendFunc = function blendFunc(sfactor, dfactor) {
   if (!(arguments.length === 2 && typeof sfactor === "number" && typeof dfactor === "number")) {
     throw new TypeError('Expected blendFunc(number sfactor, number dfactor)');
   }
-  return _blendFunc.call(this, sfactor, dfactor);
+  return basep.blendFunc.call(this, sfactor, dfactor);
 }
 
-var _blendFuncSeparate = gl.blendFuncSeparate;
-gl.blendFuncSeparate = function blendFuncSeparate(srcRGB, dstRGB, srcAlpha, dstAlpha) {
+safep.blendFuncSeparate = function blendFuncSeparate(srcRGB, dstRGB, srcAlpha, dstAlpha) {
   if (!(arguments.length === 4 && typeof srcRGB === "number" && typeof dstRGB === "number" && typeof srcAlpha === "number" && typeof dstAlpha === "number")) {
     throw new TypeError('Expected blendFuncSeparate(number srcRGB, number dstRGB, number srcAlpha, number dstAlpha)');
   }
-  return _blendFuncSeparate.call(this, srcRGB, dstRGB, srcAlpha, dstAlpha);
+  return basep.blendFuncSeparate.call(this, srcRGB, dstRGB, srcAlpha, dstAlpha);
 }
 
-var _bufferData = gl.bufferData;
-gl.bufferData = function bufferData(target, data, usage) {
+safep.bufferData = function bufferData(target, data, usage) {
   if (!(arguments.length === 3 && typeof target === "number" && 
       (typeof data === "object" || typeof data === "number") && typeof usage === "number")) {
     throw new TypeError('Expected bufferData(number target, ArrayBuffer data, number usage) or bufferData(number target, number size, number usage)');
   }
-  return _bufferData.call(this, target, data, usage);
+  return basep.bufferData.call(this, target, data, usage);
 }
 
-var _bufferSubData = gl.bufferSubData;
-gl.bufferSubData = function bufferSubData(target, offset, data) {
+safep.bufferSubData = function bufferSubData(target, offset, data) {
   if (!(arguments.length === 3 && typeof target === "number" && typeof offset === "number" && typeof data === "object")) {
     throw new TypeError('Expected bufferSubData(number target, number offset, ArrayBuffer data)');
   }
-  return _bufferSubData.call(this, target, offset, data);
+  return basep.bufferSubData.call(this, target, offset, data);
 }
 
-var _checkFramebufferStatus = gl.checkFramebufferStatus;
-gl.checkFramebufferStatus = function checkFramebufferStatus(target) {
+safep.checkFramebufferStatus = function checkFramebufferStatus(target) {
   if (!(arguments.length === 1 && typeof target === "number")) {
     throw new TypeError('Expected checkFramebufferStatus(number target)');
   }
-  return _checkFramebufferStatus.call(this, target);
+  return basep.checkFramebufferStatus.call(this, target);
 }
 
-var _clear = gl.clear;
-gl.clear = function clear(mask) {
+safep.clear = function clear(mask) {
   if (!(arguments.length === 1 && typeof mask === "number")) {
     throw new TypeError('Expected clear(number mask)');
   }
-  return _clear.call(this, mask);
+  return basep.clear.call(this, mask);
 }
 
-var _clearColor = gl.clearColor;
-gl.clearColor = function clearColor(red, green, blue, alpha) {
+safep.clearColor = function clearColor(red, green, blue, alpha) {
   if (!(arguments.length === 4 && typeof red === "number" && typeof green === "number" && typeof blue === "number" && typeof alpha === "number")) {
     throw new TypeError('Expected clearColor(number red, number green, number blue, number alpha)');
   }
-  return _clearColor.call(this, red, green, blue, alpha);
+  return basep.clearColor.call(this, red, green, blue, alpha);
 }
 
-var _clearDepth = gl.clearDepth;
-gl.clearDepth = function clearDepth(depth) {
+safep.clearDepth = function clearDepth(depth) {
   if (!(arguments.length === 1 && typeof depth === "number")) {
     throw new TypeError('Expected clearDepth(number depth)');
   }
-  return _clearDepth.call(this, depth);
+  return basep.clearDepth.call(this, depth);
 }
 
-var _clearStencil = gl.clearStencil;
-gl.clearStencil = function clearStencil(s) {
+safep.clearStencil = function clearStencil(s) {
   if (!(arguments.length === 1 && typeof s === "number")) {
     throw new TypeError('Expected clearStencil(number s)');
   }
-  return _clearStencil.call(this, s);
+  return basep.clearStencil.call(this, s);
 }
 
-var _colorMask = gl.colorMask;
-gl.colorMask = function colorMask(red, green, blue, alpha) {
+safep.colorMask = function colorMask(red, green, blue, alpha) {
   if (!(arguments.length === 4 && typeof red === "boolean" && typeof green === "boolean" && typeof blue === "boolean" && typeof alpha === "boolean")) {
     throw new TypeError('Expected colorMask(boolean red, boolean green, boolean blue, boolean alpha)');
   }
-  return _colorMask.call(this, red, green, blue, alpha);
+  return basep.colorMask.call(this, red, green, blue, alpha);
 }
 
-var _compileShader = gl.compileShader;
-gl.compileShader = function compileShader(shader) {
-  if (!(arguments.length === 1 && (shader === null || shader instanceof gl.WebGLShader))) {
+safep.compileShader = function compileShader(shader) {
+  if (!(arguments.length === 1 && (shader === null || shader instanceof WebGLShader))) {
     throw new TypeError('Expected compileShader(WebGLShader shader)');
   }
-  return _compileShader.call(this, shader ? shader._ : 0);
+  return basep.compileShader.call(this, shader ? shader._ : 0);
 }
 
-var _copyTexImage2D = gl.copyTexImage2D;
-gl.copyTexImage2D = function copyTexImage2D(target, level, internalformat, x, y, width, height, border) {
+safep.copyTexImage2D = function copyTexImage2D(target, level, internalformat, x, y, width, height, border) {
   if (!(arguments.length === 8 && typeof target === "number" && typeof level === "number" && typeof internalformat === "number" && typeof x === "number" && typeof y === "number" && typeof width === "number" && typeof height === "number" && typeof border === "number")) {
     throw new TypeError('Expected copyTexImage2D(number target, number level, number internalformat, number x, number y, number width, number height, number border)');
   }
-  return _copyTexImage2D.call(this, target, level, internalformat, x, y, width, height, border);
+  return basep.copyTexImage2D.call(this, target, level, internalformat, x, y, width, height, border);
 }
 
-var _copyTexSubImage2D = gl.copyTexSubImage2D;
-gl.copyTexSubImage2D = function copyTexSubImage2D(target, level, xoffset, yoffset, x, y, width, height) {
+safep.copyTexSubImage2D = function copyTexSubImage2D(target, level, xoffset, yoffset, x, y, width, height) {
   if (!(arguments.length === 8 && typeof target === "number" && typeof level === "number" && typeof xoffset === "number" && typeof yoffset === "number" && typeof x === "number" && typeof y === "number" && typeof width === "number" && typeof height === "number")) {
     throw new TypeError('Expected copyTexSubImage2D(number target, number level, number xoffset, number yoffset, number x, number y, number width, number height)');
   }
-  return _copyTexSubImage2D.call(this, target, level, xoffset, yoffset, x, y, width, height);
+  return basep.copyTexSubImage2D.call(this, target, level, xoffset, yoffset, x, y, width, height);
 }
 
-var _createBuffer = gl.createBuffer;
-gl.createBuffer = function createBuffer() {
+safep.createBuffer = function createBuffer() {
   if (!(arguments.length === 0)) {
     throw new TypeError('Expected createBuffer()');
   }
-  return wrapObject(_createBuffer.call(this), gl.WebGLBuffer);
+  return wrapObject(basep.createBuffer.call(this), WebGLBuffer);
 }
 
-var _createFramebuffer = gl.createFramebuffer;
-gl.createFramebuffer = function () {
+safep.createFramebuffer = function () {
   if (!(arguments.length === 0)) {
     throw new TypeError('Expected createFramebuffer()');
   }
-  return wrapObject(_createFramebuffer.call(this), gl.WebGLFramebuffer);
+  return wrapObject(basep.createFramebuffer.call(this), WebGLFramebuffer);
 }
 
-var _createProgram = gl.createProgram;
-gl.createProgram = function createProgram() {
+safep.createProgram = function createProgram() {
   if (!(arguments.length === 0)) {
     throw new TypeError('Expected createProgram()');
   }
-  return wrapObject(_createProgram.call(this), gl.WebGLProgram);
+  return wrapObject(basep.createProgram.call(this), WebGLProgram);
 }
 
-var _createRenderbuffer = gl.createRenderbuffer;
-gl.createRenderbuffer = function createRenderbuffer() {
+safep.createRenderbuffer = function createRenderbuffer() {
   if (!(arguments.length === 0)) {
     throw new TypeError('Expected createRenderbuffer()');
   }
-  return wrapObject(_createRenderbuffer.call(this), gl.WebGLRenderbuffer);
+  return wrapObject(basep.createRenderbuffer.call(this), WebGLRenderbuffer);
 }
 
-var _createShader = gl.createShader;
-gl.createShader = function createShader(type) {
+safep.createShader = function createShader(type) {
   if (!(arguments.length === 1 && typeof type === "number")) {
     throw new TypeError('Expected createShader(number type)');
   }
-  return wrapObject(_createShader.call(this, type), gl.WebGLShader);
+  return wrapObject(basep.createShader.call(this, type), WebGLShader);
 }
 
-var _createTexture = gl.createTexture;
-gl.createTexture = function createTexture() {
+safep.createTexture = function createTexture() {
   if (!(arguments.length === 0)) {
     throw new TypeError('Expected createTexture()');
   }
-  return wrapObject(_createTexture.call(this), gl.WebGLTexture);
+  return wrapObject(basep.createTexture.call(this), WebGLTexture);
 }
 
-var _cullFace = gl.cullFace;
-gl.cullFace = function cullFace(mode) {
+safep.cullFace = function cullFace(mode) {
   if (!(arguments.length === 1 && typeof mode === "number")) {
     throw new TypeError('Expected cullFace(number mode)');
   }
-  return _cullFace.call(this, mode);
+  return basep.cullFace.call(this, mode);
 }
 
-var _deleteBuffer = gl.deleteBuffer;
-gl.deleteBuffer = function deleteBuffer(buffer) {
-  if (!(arguments.length === 1 && (buffer === null || buffer instanceof gl.WebGLBuffer))) {
+safep.deleteBuffer = function deleteBuffer(buffer) {
+  if (!(arguments.length === 1 && (buffer === null || buffer instanceof WebGLBuffer))) {
     throw new TypeError('Expected deleteBuffer(WebGLBuffer buffer)');
   }
-  return _deleteBuffer.call(this, buffer ? buffer._ : 0);
+  return basep.deleteBuffer.call(this, buffer ? buffer._ : 0);
 }
 
-var _deleteFramebuffer = gl.deleteFramebuffer;
-gl.deleteFramebuffer = function deleteFramebuffer(framebuffer) {
-  if (!(arguments.length === 1 && (framebuffer === null || framebuffer instanceof gl.WebGLFramebuffer))) {
+safep.deleteFramebuffer = function deleteFramebuffer(framebuffer) {
+  if (!(arguments.length === 1 && (framebuffer === null || framebuffer instanceof WebGLFramebuffer))) {
     throw new TypeError('Expected deleteFramebuffer(WebGLFramebuffer framebuffer)');
   }
-  return _deleteFramebuffer.call(this, framebuffer ? framebuffer._ : 0);
+  return basep.deleteFramebuffer.call(this, framebuffer ? framebuffer._ : 0);
 }
 
-var _deleteProgram = gl.deleteProgram;
-gl.deleteProgram = function deleteProgram(program) {
-  if (!(arguments.length === 1 && (program === null || program instanceof gl.WebGLProgram))) {
+safep.deleteProgram = function deleteProgram(program) {
+  if (!(arguments.length === 1 && (program === null || program instanceof WebGLProgram))) {
     throw new TypeError('Expected deleteProgram(WebGLProgram program)');
   }
-  return _deleteProgram.call(this, program ? program._ : 0);
+  return basep.deleteProgram.call(this, program ? program._ : 0);
 }
 
-var _deleteRenderbuffer = gl.deleteRenderbuffer;
-gl.deleteRenderbuffer = function deleteRenderbuffer(renderbuffer) {
-  if (!(arguments.length === 1 && (renderbuffer === null || renderbuffer instanceof gl.WebGLRenderbuffer))) {
+safep.deleteRenderbuffer = function deleteRenderbuffer(renderbuffer) {
+  if (!(arguments.length === 1 && (renderbuffer === null || renderbuffer instanceof WebGLRenderbuffer))) {
     throw new TypeError('Expected deleteRenderbuffer(WebGLRenderbuffer renderbuffer)');
   }
-  return _deleteRenderbuffer.call(this, renderbuffer ? renderbuffer._ : 0);
+  return basep.deleteRenderbuffer.call(this, renderbuffer ? renderbuffer._ : 0);
 }
 
-var _deleteShader = gl.deleteShader;
-gl.deleteShader = function deleteShader(shader) {
-  if (!(arguments.length === 1 && (shader === null || shader instanceof gl.WebGLShader))) {
+safep.deleteShader = function deleteShader(shader) {
+  if (!(arguments.length === 1 && (shader === null || shader instanceof WebGLShader))) {
     throw new TypeError('Expected deleteShader(WebGLShader shader)');
   }
-  return _deleteShader.call(this, shader ? shader._ : 0);
+  return basep.deleteShader.call(this, shader ? shader._ : 0);
 }
 
-var _deleteTexture = gl.deleteTexture;
-gl.deleteTexture = function deleteTexture(texture) {
-  if (!(arguments.length === 1 && (texture === null || texture instanceof gl.WebGLTexture))) {
+safep.deleteTexture = function deleteTexture(texture) {
+  if (!(arguments.length === 1 && (texture === null || texture instanceof WebGLTexture))) {
     throw new TypeError('Expected deleteTexture(WebGLTexture texture)');
   }
-  return _deleteTexture.call(this, texture ? texture._ : 0);
+  return basep.deleteTexture.call(this, texture ? texture._ : 0);
 }
 
-var _depthFunc = gl.depthFunc;
-gl.depthFunc = function depthFunc(func) {
+safep.depthFunc = function depthFunc(func) {
   if (!(arguments.length === 1 && typeof func === "number")) {
     throw new TypeError('Expected depthFunc(number func)');
   }
-  return _depthFunc.call(this, func);
+  return basep.depthFunc.call(this, func);
 }
 
-var _depthMask = gl.depthMask;
-gl.depthMask = function depthMask(flag) {
+safep.depthMask = function depthMask(flag) {
   if (!(arguments.length === 1 && typeof flag === "boolean")) {
     throw new TypeError('Expected depthMask(boolean flag)');
   }
-  return _depthMask.call(this, flag);
+  return basep.depthMask.call(this, flag);
 }
 
-var _depthRange = gl.depthRange;
-gl.depthRange = function depthRange(zNear, zFar) {
+safep.depthRange = function depthRange(zNear, zFar) {
   if (!(arguments.length === 2 && typeof zNear === "number" && typeof zFar === "number")) {
     throw new TypeError('Expected depthRange(number zNear, number zFar)');
   }
-  return _depthRange.call(this, zNear, zFar);
+  return basep.depthRange.call(this, zNear, zFar);
 }
 
-var _detachShader = gl.detachShader;
-gl.detachShader = function detachShader(program, shader) {
-  if (!(arguments.length === 2 && (program === null || program instanceof gl.WebGLProgram) && (shader === null || shader instanceof gl.WebGLShader))) {
+safep.detachShader = function detachShader(program, shader) {
+  if (!(arguments.length === 2 && (program === null || program instanceof WebGLProgram) && (shader === null || shader instanceof WebGLShader))) {
     throw new TypeError('Expected detachShader(WebGLProgram program, WebGLShader shader)');
   }
-  return _detachShader.call(this, program ? program._ : 0, shader ? shader._ : 0);
+  return basep.detachShader.call(this, program ? program._ : 0, shader ? shader._ : 0);
 }
 
-var _disable = gl.disable;
-gl.disable = function disable(cap) {
+safep.disable = function disable(cap) {
   if (!(arguments.length === 1 && typeof cap === "number")) {
     throw new TypeError('Expected disable(number cap)');
   }
-  return _disable.call(this, cap);
+  return basep.disable.call(this, cap);
 }
 
-var _disableVertexAttribArray = gl.disableVertexAttribArray;
-gl.disableVertexAttribArray = function disableVertexAttribArray(index) {
+safep.disableVertexAttribArray = function disableVertexAttribArray(index) {
   if (!(arguments.length === 1 && typeof index === "number")) {
     throw new TypeError('Expected disableVertexAttribArray(number index)');
   }
-  return _disableVertexAttribArray.call(this, index);
+  return basep.disableVertexAttribArray.call(this, index);
 }
 
-var _drawArrays = gl.drawArrays;
-gl.drawArrays = function drawArrays(mode, first, count) {
+safep.drawArrays = function drawArrays(mode, first, count) {
   if (!(arguments.length === 3 && typeof mode === "number" && typeof first === "number" && typeof count === "number")) {
     throw new TypeError('Expected drawArrays(number mode, number first, number count)');
   }
-  return _drawArrays.call(this, mode, first, count);
+  return basep.drawArrays.call(this, mode, first, count);
 }
 
-var _drawElements = gl.drawElements;
-gl.drawElements = function drawElements(mode, count, type, offset) {
+safep.drawElements = function drawElements(mode, count, type, offset) {
   if (!(arguments.length === 4 && typeof mode === "number" && typeof count === "number" && typeof type === "number" && typeof offset === "number")) {
     throw new TypeError('Expected drawElements(number mode, number count, number type, number offset)');
   }
-  return _drawElements.call(this, mode, count, type, offset);
+  return basep.drawElements.call(this, mode, count, type, offset);
 }
 
-var _enable = gl.enable;
-gl.enable = function enable(cap) {
+safep.enable = function enable(cap) {
   if (!(arguments.length === 1 && typeof cap === "number")) {
     throw new TypeError('Expected enable(number cap)');
   }
-  return _enable.call(this, cap);
+  return basep.enable.call(this, cap);
 }
 
-var _enableVertexAttribArray = gl.enableVertexAttribArray;
-gl.enableVertexAttribArray = function enableVertexAttribArray(index) {
+safep.enableVertexAttribArray = function enableVertexAttribArray(index) {
   if (!(arguments.length === 1 && typeof index === "number")) {
     throw new TypeError('Expected enableVertexAttribArray(number index)');
   }
-  return _enableVertexAttribArray.call(this, index);
+  return basep.enableVertexAttribArray.call(this, index);
 }
 
-var _finish = gl.finish;
-gl.finish = function finish() {
+safep.finish = function finish() {
   if (!(arguments.length === 0)) {
     throw new TypeError('Expected finish()');
   }
-  return _finish.call(this);
+  return basep.finish.call(this);
 }
 
-var _flush = gl.flush;
-gl.flush = function flush() {
+safep.flush = function flush() {
   if (!(arguments.length === 0)) {
     throw new TypeError('Expected flush()');
   }
-  return _flush.call(this);
+  return basep.flush.call(this);
 }
 
-var _framebufferRenderbuffer = gl.framebufferRenderbuffer;
-gl.framebufferRenderbuffer = function framebufferRenderbuffer(target, attachment, renderbuffertarget, renderbuffer) {
-  if (!(arguments.length === 4 && typeof target === "number" && typeof attachment === "number" && typeof renderbuffertarget === "number" && (renderbuffer === null || renderbuffer instanceof gl.WebGLRenderbuffer))) {
+safep.framebufferRenderbuffer = function framebufferRenderbuffer(target, attachment, renderbuffertarget, renderbuffer) {
+  if (!(arguments.length === 4 && typeof target === "number" && typeof attachment === "number" && typeof renderbuffertarget === "number" && (renderbuffer === null || renderbuffer instanceof WebGLRenderbuffer))) {
     throw new TypeError('Expected framebufferRenderbuffer(number target, number attachment, number renderbuffertarget, WebGLRenderbuffer renderbuffer)');
   }
-  return _framebufferRenderbuffer.call(this, target, attachment, renderbuffertarget, renderbuffer ? renderbuffer._ : 0);
+  return basep.framebufferRenderbuffer.call(this, target, attachment, renderbuffertarget, renderbuffer ? renderbuffer._ : 0);
 }
 
-var _framebufferTexture2D = gl.framebufferTexture2D;
-gl.framebufferTexture2D = function framebufferTexture2D(target, attachment, textarget, texture, level) {
-  if (!(arguments.length === 5 && typeof target === "number" && typeof attachment === "number" && typeof textarget === "number" && (texture === null || texture instanceof gl.WebGLTexture) && typeof level === "number")) {
+safep.framebufferTexture2D = function framebufferTexture2D(target, attachment, textarget, texture, level) {
+  if (!(arguments.length === 5 && typeof target === "number" && typeof attachment === "number" && typeof textarget === "number" && (texture === null || texture instanceof WebGLTexture) && typeof level === "number")) {
     throw new TypeError('Expected framebufferTexture2D(number target, number attachment, number textarget, WebGLTexture texture, number level)');
   }
-  return _framebufferTexture2D.call(this, target, attachment, textarget, texture ? texture._ : 0, level);
+  return basep.framebufferTexture2D.call(this, target, attachment, textarget, texture ? texture._ : 0, level);
 }
 
-var _frontFace = gl.frontFace;
-gl.frontFace = function frontFace(mode) {
+safep.frontFace = function frontFace(mode) {
   if (!(arguments.length === 1 && typeof mode === "number")) {
     throw new TypeError('Expected frontFace(number mode)');
   }
-  return _frontFace.call(this, mode);
+  return basep.frontFace.call(this, mode);
 }
 
-var _generateMipmap = gl.generateMipmap;
-gl.generateMipmap = function generateMipmap(target) {
+safep.generateMipmap = function generateMipmap(target) {
   if (!(arguments.length === 1 && typeof target === "number")) {
     throw new TypeError('Expected generateMipmap(number target)');
   }
-  return _generateMipmap.call(this, target);
+  return basep.generateMipmap.call(this, target);
 }
 
-var _getActiveAttrib = gl.getActiveAttrib;
-gl.getActiveAttrib = function getActiveAttrib(program, index) {
-  if (!(arguments.length === 2 && (program === null || program instanceof gl.WebGLProgram) && typeof index === "number")) {
+safep.getActiveAttrib = function getActiveAttrib(program, index) {
+  if (!(arguments.length === 2 && (program === null || program instanceof WebGLProgram) && typeof index === "number")) {
     throw new TypeError('Expected getActiveAttrib(WebGLProgram program, number index)');
   }
-  return wrapObject(_getActiveAttrib.call(this, program ? program._ : 0, index), gl.WebGLActiveInfo);
+  return wrapObject(basep.getActiveAttrib.call(this, program ? program._ : 0, index), WebGLActiveInfo);
 }
 
-var _getActiveUniform = gl.getActiveUniform;
-gl.getActiveUniform = function getActiveUniform(program, index) {
-  if (!(arguments.length === 2 && (program === null || program instanceof gl.WebGLProgram) && typeof index === "number")) {
+safep.getActiveUniform = function getActiveUniform(program, index) {
+  if (!(arguments.length === 2 && (program === null || program instanceof WebGLProgram) && typeof index === "number")) {
     throw new TypeError('Expected getActiveUniform(WebGLProgram program, number index)');
   }
-  return wrapObject(_getActiveUniform.call(this, program ? program._ : 0, index), gl.WebGLActiveInfo);
+  return wrapObject(basep.getActiveUniform.call(this, program ? program._ : 0, index), WebGLActiveInfo);
 }
 
-var _getAttachedShaders = gl.getAttachedShaders;
-gl.getAttachedShaders = function getAttachedShaders(program) {
-  if (!(arguments.length === 1 && (program === null || program instanceof gl.WebGLProgram))) {
+safep.getAttachedShaders = function getAttachedShaders(program) {
+  if (!(arguments.length === 1 && (program === null || program instanceof WebGLProgram))) {
     throw new TypeError('Expected getAttachedShaders(WebGLProgram program)');
   }
-  return _getAttachedShaders.call(this, program ? program._ : 0);
+  return basep.getAttachedShaders.call(this, program ? program._ : 0);
 }
 
-var _getAttribLocation = gl.getAttribLocation;
-gl.getAttribLocation = function getAttribLocation(program, name) {
-  if (!(arguments.length === 2 && (program === null || program instanceof gl.WebGLProgram) && typeof name === "string")) {
+safep.getAttribLocation = function getAttribLocation(program, name) {
+  if (!(arguments.length === 2 && (program === null || program instanceof WebGLProgram) && typeof name === "string")) {
     throw new TypeError('Expected getAttribLocation(WebGLProgram program, string name)');
   }
-  return _getAttribLocation.call(this, program ? program._ : 0, name);
+  return basep.getAttribLocation.call(this, program ? program._ : 0, name);
 }
 
-var _getParameter = gl.getParameter;
-gl.getParameter = function getParameter(pname) {
+safep.getParameter = function getParameter(pname) {
   if (!(arguments.length === 1 && typeof pname === "number")) {
     throw new TypeError('Expected getParameter(number pname)');
   }
-  return _getParameter.call(this, pname);
+  return basep.getParameter.call(this, pname);
 }
 
-var _getBufferParameter = gl.getBufferParameter;
-gl.getBufferParameter = function getBufferParameter(target, pname) {
+safep.getBufferParameter = function getBufferParameter(target, pname) {
   if (!(arguments.length === 2 && typeof target === "number" && typeof pname === "number")) {
     throw new TypeError('Expected getBufferParameter(number target, number pname)');
   }
-  return _getBufferParameter.call(this, target, pname);
+  return basep.getBufferParameter.call(this, target, pname);
 }
 
-var _getError = gl.getError;
-gl.getError = function getError() {
+safep.getError = function getError() {
   if (!(arguments.length === 0)) {
     throw new TypeError('Expected getError()');
   }
-  return _getError.call(this);
+  return basep.getError.call(this);
 }
 
-var _getFramebufferAttachmentParameter = gl.getFramebufferAttachmentParameter;
-gl.getFramebufferAttachmentParameter = function getFramebufferAttachmentParameter(target, attachment, pname) {
+safep.getFramebufferAttachmentParameter = function getFramebufferAttachmentParameter(target, attachment, pname) {
   if (!(arguments.length === 3 && typeof target === "number" && typeof attachment === "number" && typeof pname === "number")) {
     throw new TypeError('Expected getFramebufferAttachmentParameter(number target, number attachment, number pname)');
   }
-  return _getFramebufferAttachmentParameter.call(this, target, attachment, pname);
+  return basep.getFramebufferAttachmentParameter.call(this, target, attachment, pname);
 }
 
-var _getProgramParameter = gl.getProgramParameter;
-gl.getProgramParameter = function getProgramParameter(program, pname) {
-  if (!(arguments.length === 2 && (program === null || program instanceof gl.WebGLProgram) && typeof pname === "number")) {
+safep.getProgramParameter = function getProgramParameter(program, pname) {
+  if (!(arguments.length === 2 && (program === null || program instanceof WebGLProgram) && typeof pname === "number")) {
     throw new TypeError('Expected getProgramParameter(WebGLProgram program, number pname)');
   }
-  return _getProgramParameter.call(this, program ? program._ : 0, pname);
+  return basep.getProgramParameter.call(this, program ? program._ : 0, pname);
 }
 
-var _getProgramInfoLog = gl.getProgramInfoLog;
-gl.getProgramInfoLog = function getProgramInfoLog(program) {
-  if (!(arguments.length === 1 && (program === null || program instanceof gl.WebGLProgram))) {
+safep.getProgramInfoLog = function getProgramInfoLog(program) {
+  if (!(arguments.length === 1 && (program === null || program instanceof WebGLProgram))) {
     throw new TypeError('Expected getProgramInfoLog(WebGLProgram program)');
   }
-  return _getProgramInfoLog.call(this, program ? program._ : 0);
+  return basep.getProgramInfoLog.call(this, program ? program._ : 0);
 }
 
-var _getRenderbufferParameter = gl.getRenderbufferParameter;
-gl.getRenderbufferParameter = function getRenderbufferParameter(target, pname) {
+safep.getRenderbufferParameter = function getRenderbufferParameter(target, pname) {
   if (!(arguments.length === 2 && typeof target === "number" && typeof pname === "number")) {
     throw new TypeError('Expected getRenderbufferParameter(number target, number pname)');
   }
-  return _getRenderbufferParameter.call(this, target, pname);
+  return basep.getRenderbufferParameter.call(this, target, pname);
 }
 
-var _getShaderParameter = gl.getShaderParameter;
-gl.getShaderParameter = function getShaderParameter(shader, pname) {
-  if (!(arguments.length === 2 && (shader === null || shader instanceof gl.WebGLShader) && typeof pname === "number")) {
+safep.getShaderParameter = function getShaderParameter(shader, pname) {
+  if (!(arguments.length === 2 && (shader === null || shader instanceof WebGLShader) && typeof pname === "number")) {
     throw new TypeError('Expected getShaderParameter(WebGLShader shader, number pname)');
   }
-  return _getShaderParameter.call(this, shader ? shader._ : 0, pname);
+  return basep.getShaderParameter.call(this, shader ? shader._ : 0, pname);
 }
 
-var _getShaderInfoLog = gl.getShaderInfoLog;
-gl.getShaderInfoLog = function getShaderInfoLog(shader) {
-  if (!(arguments.length === 1 && (shader === null || shader instanceof gl.WebGLShader))) {
+safep.getShaderInfoLog = function getShaderInfoLog(shader) {
+  if (!(arguments.length === 1 && (shader === null || shader instanceof WebGLShader))) {
     throw new TypeError('Expected getShaderInfoLog(WebGLShader shader)');
   }
-  return _getShaderInfoLog.call(this, shader ? shader._ : 0);
+  return basep.getShaderInfoLog.call(this, shader ? shader._ : 0);
 }
 
-var _getShaderSource = gl.getShaderSource;
-gl.getShaderSource = function getShaderSource(shader) {
-  if (!(arguments.length === 1 && (shader === null || shader instanceof gl.WebGLShader))) {
+safep.getShaderSource = function getShaderSource(shader) {
+  if (!(arguments.length === 1 && (shader === null || shader instanceof WebGLShader))) {
     throw new TypeError('Expected getShaderSource(WebGLShader shader)');
   }
-  return _getShaderSource.call(this, shader ? shader._ : 0);
+  return basep.getShaderSource.call(this, shader ? shader._ : 0);
 }
 
-var _getTexParameter = gl.getTexParameter;
-gl.getTexParameter = function getTexParameter(target, pname) {
+safep.getTexParameter = function getTexParameter(target, pname) {
   if (!(arguments.length === 2 && typeof target === "number" && typeof pname === "number")) {
     throw new TypeError('Expected getTexParameter(number target, number pname)');
   }
-  return _getTexParameter.call(this, target, pname);
+  return basep.getTexParameter.call(this, target, pname);
 }
 
-var _getUniform = gl.getUniform;
-gl.getUniform = function getUniform(program, location) {
-  if (!(arguments.length === 2 && (program === null || program instanceof gl.WebGLProgram) && (location === null || location instanceof gl.WebGLUniformLocation))) {
+safep.getUniform = function getUniform(program, location) {
+  if (!(arguments.length === 2 && (program === null || program instanceof WebGLProgram) && (location === null || location instanceof WebGLUniformLocation))) {
     throw new TypeError('Expected getUniform(WebGLProgram program, WebGLUniformLocation location)');
   }
-  return _getUniform.call(this, program ? program._ : 0, location ? location._ : 0);
+  return basep.getUniform.call(this, program ? program._ : 0, location ? location._ : 0);
 }
 
-var _getUniformLocation = gl.getUniformLocation;
-gl.getUniformLocation = function getUniformLocation(program, name) {
-  if (!(arguments.length === 2 && (program === null || program instanceof gl.WebGLProgram) && typeof name === "string")) {
+safep.getUniformLocation = function getUniformLocation(program, name) {
+  if (!(arguments.length === 2 && (program === null || program instanceof WebGLProgram) && typeof name === "string")) {
     throw new TypeError('Expected getUniformLocation(WebGLProgram program, string name)');
   }
-  return wrapObject(_getUniformLocation.call(this, program ? program._ : 0, name), gl.WebGLUniformLocation);
+  return wrapObject(basep.getUniformLocation.call(this, program ? program._ : 0, name), WebGLUniformLocation);
 }
 
-var _getVertexAttrib = gl.getVertexAttrib;
-gl.getVertexAttrib = function getVertexAttrib(index, pname) {
+safep.getVertexAttrib = function getVertexAttrib(index, pname) {
   if (!(arguments.length === 2 && typeof index === "number" && typeof pname === "number")) {
     throw new TypeError('Expected getVertexAttrib(number index, number pname)');
   }
-  return _getVertexAttrib.call(this, index, pname);
+  return basep.getVertexAttrib.call(this, index, pname);
 }
 
-var _getVertexAttribOffset = gl.getVertexAttribOffset;
-gl.getVertexAttribOffset = function getVertexAttribOffset(index, pname) {
+safep.getVertexAttribOffset = function getVertexAttribOffset(index, pname) {
   if (!(arguments.length === 2 && typeof index === "number" && typeof pname === "number")) {
     throw new TypeError('Expected getVertexAttribOffset(number index, number pname)');
   }
@@ -623,198 +570,174 @@ gl.getVertexAttribOffset = function getVertexAttribOffset(index, pname) {
     var buf=_getVertexAttribOffset(index, pname);
     return new Float32Array(buf);
   }
-  return _getVertexAttribOffset.call(this, index, pname);
+  return basep.getVertexAttribOffset.call(this, index, pname);
 }
 
-var _hint = gl.hint;
-gl.hint = function hint(target, mode) {
+safep.hint = function hint(target, mode) {
   if (!(arguments.length === 2 && typeof target === "number" && typeof mode === "number")) {
     throw new TypeError('Expected hint(number target, number mode)');
   }
-  return _hint.call(this, target, mode);
+  return basep.hint.call(this, target, mode);
 }
 
-var _isBuffer = gl.isBuffer;
-gl.isBuffer = function isBuffer(buffer) {
-  if (!(arguments.length === 1 && (buffer === null || buffer instanceof gl.WebGLBuffer))) {
+safep.isBuffer = function isBuffer(buffer) {
+  if (!(arguments.length === 1 && (buffer === null || buffer instanceof WebGLBuffer))) {
     throw new TypeError('Expected isBuffer(WebGLBuffer buffer)');
   }
-  return _isBuffer.call(this, buffer ? buffer._ : 0);
+  return basep.isBuffer.call(this, buffer ? buffer._ : 0);
 }
 
-var _isEnabled = gl.isEnabled;
-gl.isEnabled = function isEnabled(cap) {
+safep.isEnabled = function isEnabled(cap) {
   if (!(arguments.length === 1 && typeof cap === "number")) {
     throw new TypeError('Expected isEnabled(number cap)');
   }
-  return _isEnabled.call(this, cap);
+  return basep.isEnabled.call(this, cap);
 }
 
-var _isFramebuffer = gl.isFramebuffer;
-gl.isFramebuffer = function isFramebuffer(framebuffer) {
-  if (!(arguments.length === 1 && (framebuffer === null || framebuffer instanceof gl.WebGLFramebuffer))) {
+safep.isFramebuffer = function isFramebuffer(framebuffer) {
+  if (!(arguments.length === 1 && (framebuffer === null || framebuffer instanceof WebGLFramebuffer))) {
     throw new TypeError('Expected isFramebuffer(WebGLFramebuffer framebuffer)');
   }
-  return _isFramebuffer.call(this, framebuffer ? framebuffer._ : 0);
+  return basep.isFramebuffer.call(this, framebuffer ? framebuffer._ : 0);
 }
 
-var _isProgram = gl.isProgram;
-gl.isProgram = function isProgram(program) {
-  if (!(arguments.length === 1 && (program === null || program instanceof gl.WebGLProgram))) {
+safep.isProgram = function isProgram(program) {
+  if (!(arguments.length === 1 && (program === null || program instanceof WebGLProgram))) {
     throw new TypeError('Expected isProgram(WebGLProgram program)');
   }
-  return _isProgram.call(this, program ? program._ : 0);
+  return basep.isProgram.call(this, program ? program._ : 0);
 }
 
-var _isRenderbuffer = gl.isRenderbuffer;
-gl.isRenderbuffer = function isRenderbuffer(renderbuffer) {
-  if (!(arguments.length === 1 && (renderbuffer === null || renderbuffer instanceof gl.WebGLRenderbuffer))) {
+safep.isRenderbuffer = function isRenderbuffer(renderbuffer) {
+  if (!(arguments.length === 1 && (renderbuffer === null || renderbuffer instanceof WebGLRenderbuffer))) {
     throw new TypeError('Expected isRenderbuffer(WebGLRenderbuffer renderbuffer)');
   }
-  return _isRenderbuffer.call(this, renderbuffer ? renderbuffer._ : 0);
+  return basep.isRenderbuffer.call(this, renderbuffer ? renderbuffer._ : 0);
 }
 
-var _isShader = gl.isShader;
-gl.isShader = function isShader(shader) {
-  if (!(arguments.length === 1 && (shader === null || shader instanceof gl.WebGLShader))) {
+safep.isShader = function isShader(shader) {
+  if (!(arguments.length === 1 && (shader === null || shader instanceof WebGLShader))) {
     throw new TypeError('Expected isShader(WebGLShader shader)');
   }
-  return _isShader.call(this, shader ? shader._ : 0);
+  return basep.isShader.call(this, shader ? shader._ : 0);
 }
 
-var _isTexture = gl.isTexture;
-gl.isTexture = function isTexture(texture) {
-  if (!(arguments.length === 1 && (texture === null || texture instanceof gl.WebGLTexture))) {
+safep.isTexture = function isTexture(texture) {
+  if (!(arguments.length === 1 && (texture === null || texture instanceof WebGLTexture))) {
     throw new TypeError('Expected isTexture(WebGLTexture texture)');
   }
-  return _isTexture.call(this, texture ? texture._ : 0);
+  return basep.isTexture.call(this, texture ? texture._ : 0);
 }
 
-var _lineWidth = gl.lineWidth;
-gl.lineWidth = function lineWidth(width) {
+safep.lineWidth = function lineWidth(width) {
   if (!(arguments.length === 1 && typeof width === "number")) {
     throw new TypeError('Expected lineWidth(number width)');
   }
-  return _lineWidth.call(this, width);
+  return basep.lineWidth.call(this, width);
 }
 
-var _linkProgram = gl.linkProgram;
-gl.linkProgram = function linkProgram(program) {
-  if (!(arguments.length === 1 && (program === null || program instanceof gl.WebGLProgram))) {
+safep.linkProgram = function linkProgram(program) {
+  if (!(arguments.length === 1 && (program === null || program instanceof WebGLProgram))) {
     throw new TypeError('Expected linkProgram(WebGLProgram program)');
   }
-  return _linkProgram.call(this, program ? program._ : 0);
+  return basep.linkProgram.call(this, program ? program._ : 0);
 }
 
-var _pixelStorei = gl.pixelStorei;
-gl.pixelStorei = function pixelStorei(pname, param) {
+safep.pixelStorei = function pixelStorei(pname, param) {
   if (!(arguments.length === 2 && typeof pname === "number" && (typeof param === "number") || typeof param === "boolean")) {
     throw new TypeError('Expected pixelStorei(number pname, number param)');
   }
   
   if(typeof param === "boolean")
     param= param ? 1 : 0;
-  return _pixelStorei.call(this, pname, param);
+  return basep.pixelStorei.call(this, pname, param);
 }
 
-var _polygonOffset = gl.polygonOffset;
-gl.polygonOffset = function polygonOffset(factor, units) {
+safep.polygonOffset = function polygonOffset(factor, units) {
   if (!(arguments.length === 2 && typeof factor === "number" && typeof units === "number")) {
     throw new TypeError('Expected polygonOffset(number factor, number units)');
   }
-  return _polygonOffset.call(this, factor, units);
+  return basep.polygonOffset.call(this, factor, units);
 }
 
-var _readPixels = gl.readPixels;
-gl.readPixels = function readPixels(x, y, width, height, format, type, pixels) {
+safep.readPixels = function readPixels(x, y, width, height, format, type, pixels) {
   if (!(arguments.length === 7 && typeof x === "number" && typeof y === "number" && typeof width === "number" && typeof height === "number" && typeof format === "number" && typeof type === "number" && typeof pixels === "object")) {
     throw new TypeError('Expected readPixels(number x, number y, number width, number height, number format, number type, ArrayBufferView pixels)');
   }
-  return _readPixels.call(this, x, y, width, height, format, type, pixels);
+  return basep.readPixels.call(this, x, y, width, height, format, type, pixels);
 }
 
-var _renderbufferStorage = gl.renderbufferStorage;
-gl.renderbufferStorage = function renderbufferStorage(target, internalformat, width, height) {
+safep.renderbufferStorage = function renderbufferStorage(target, internalformat, width, height) {
   if (!(arguments.length === 4 && typeof target === "number" && typeof internalformat === "number" && typeof width === "number" && typeof height === "number")) {
     throw new TypeError('Expected renderbufferStorage(number target, number internalformat, number width, number height)');
   }
-  return _renderbufferStorage.call(this, target, internalformat, width, height);
+  return basep.renderbufferStorage.call(this, target, internalformat, width, height);
 }
 
-var _sampleCoverage = gl.sampleCoverage;
-gl.sampleCoverage = function sampleCoverage(value, invert) {
+safep.sampleCoverage = function sampleCoverage(value, invert) {
   if (!(arguments.length === 2 && typeof value === "number" && typeof invert === "boolean")) {
     throw new TypeError('Expected sampleCoverage(number value, boolean invert)');
   }
-  return _sampleCoverage.call(this, value, invert);
+  return basep.sampleCoverage.call(this, value, invert);
 }
 
-var _scissor = gl.scissor;
-gl.scissor = function scissor(x, y, width, height) {
+safep.scissor = function scissor(x, y, width, height) {
   if (!(arguments.length === 4 && typeof x === "number" && typeof y === "number" && typeof width === "number" && typeof height === "number")) {
     throw new TypeError('Expected scissor(number x, number y, number width, number height)');
   }
-  return _scissor.call(this, x, y, width, height);
+  return basep.scissor.call(this, x, y, width, height);
 }
 
-var _shaderSource = gl.shaderSource;
-gl.shaderSource = function shaderSource(shader, source) {
-  if (!(arguments.length === 2 && (shader === null || shader instanceof gl.WebGLShader) && typeof source === "string")) {
+safep.shaderSource = function shaderSource(shader, source) {
+  if (!(arguments.length === 2 && (shader === null || shader instanceof WebGLShader) && typeof source === "string")) {
     throw new TypeError('Expected shaderSource(WebGLShader shader, string source)');
   }
-  return _shaderSource.call(this, shader ? shader._ : 0, source);
+  return basep.shaderSource.call(this, shader ? shader._ : 0, source);
 }
 
-var _stencilFunc = gl.stencilFunc;
-gl.stencilFunc = function stencilFunc(func, ref, mask) {
+safep.stencilFunc = function stencilFunc(func, ref, mask) {
   if (!(arguments.length === 3 && typeof func === "number" && typeof ref === "number" && typeof mask === "number")) {
     throw new TypeError('Expected stencilFunc(number func, number ref, number mask)');
   }
-  return _stencilFunc.call(this, func, ref, mask);
+  return basep.stencilFunc.call(this, func, ref, mask);
 }
 
-var _stencilFuncSeparate = gl.stencilFuncSeparate;
-gl.stencilFuncSeparate = function stencilFuncSeparate(face, func, ref, mask) {
+safep.stencilFuncSeparate = function stencilFuncSeparate(face, func, ref, mask) {
   if (!(arguments.length === 4 && typeof face === "number" && typeof func === "number" && typeof ref === "number" && typeof mask === "number")) {
     throw new TypeError('Expected stencilFuncSeparate(number face, number func, number ref, number mask)');
   }
-  return _stencilFuncSeparate.call(this, face, func, ref, mask);
+  return basep.stencilFuncSeparate.call(this, face, func, ref, mask);
 }
 
-var _stencilMask = gl.stencilMask;
-gl.stencilMask = function stencilMask(mask) {
+safep.stencilMask = function stencilMask(mask) {
   if (!(arguments.length === 1 && typeof mask === "number")) {
     throw new TypeError('Expected stencilMask(number mask)');
   }
-  return _stencilMask.call(this, mask);
+  return basep.stencilMask.call(this, mask);
 }
 
-var _stencilMaskSeparate = gl.stencilMaskSeparate;
-gl.stencilMaskSeparate = function stencilMaskSeparate(face, mask) {
+safep.stencilMaskSeparate = function stencilMaskSeparate(face, mask) {
   if (!(arguments.length === 2 && typeof face === "number" && typeof mask === "number")) {
     throw new TypeError('Expected stencilMaskSeparate(number face, number mask)');
   }
-  return _stencilMaskSeparate.call(this, face, mask);
+  return basep.stencilMaskSeparate.call(this, face, mask);
 }
 
-var _stencilOp = gl.stencilOp;
-gl.stencilOp = function stencilOp(fail, zfail, zpass) {
+safep.stencilOp = function stencilOp(fail, zfail, zpass) {
   if (!(arguments.length === 3 && typeof fail === "number" && typeof zfail === "number" && typeof zpass === "number")) {
     throw new TypeError('Expected stencilOp(number fail, number zfail, number zpass)');
   }
-  return _stencilOp.call(this, fail, zfail, zpass);
+  return basep.stencilOp.call(this, fail, zfail, zpass);
 }
 
-var _stencilOpSeparate = gl.stencilOpSeparate;
-gl.stencilOpSeparate = function stencilOpSeparate(face, fail, zfail, zpass) {
+safep.stencilOpSeparate = function stencilOpSeparate(face, fail, zfail, zpass) {
   if (!(arguments.length === 4 && typeof face === "number" && typeof fail === "number" && typeof zfail === "number" && typeof zpass === "number")) {
     throw new TypeError('Expected stencilOpSeparate(number face, number fail, number zfail, number zpass)');
   }
-  return _stencilOpSeparate.call(this, face, fail, zfail, zpass);
+  return basep.stencilOpSeparate.call(this, face, fail, zfail, zpass);
 }
 
-var _texImage2D = gl.texImage2D;
-gl.texImage2D = function texImage2D(target, level, internalformat, width, height, border, format, type, pixels) {
+safep.texImage2D = function texImage2D(target, level, internalformat, width, height, border, format, type, pixels) {
   if(!(arguments.length == 9 || arguments.length == 6)) {
     throw new TypeError('Expected texImage2D(number target, number level, number internalformat, number width, number height, number border, number format, number type, ArrayBufferView pixels) \
         or texImage2D(number target, number level, number internalformat, number format, number type, Image pixels)');
@@ -832,7 +755,7 @@ gl.texImage2D = function texImage2D(target, level, internalformat, width, height
     pixels=border;
     type=height;
     format=width;
-    return _texImage2D.call(this, target, level, internalformat, pixels.width, pixels.height, 0, format, type, pixels);
+    return basep.texImage2D.call(this, target, level, internalformat, pixels.width, pixels.height, 0, format, type, pixels);
   }
   else if (arguments.length == 9) {
     if(!(typeof target === "number" && 
@@ -842,28 +765,25 @@ gl.texImage2D = function texImage2D(target, level, internalformat, width, height
         (pixels==null || typeof pixels === "object"))) {
       throw new TypeError('Expected texImage2D(number target, number level, number internalformat, number width, number height, number border, number format, number type, ArrayBufferView pixels)');
     }
-    return _texImage2D.call(this, target, level, internalformat, width, height, border, format, type, pixels);
+    return basep.texImage2D.call(this, target, level, internalformat, width, height, border, format, type, pixels);
   }
 }
 
-var _texParameterf = gl.texParameterf;
-gl.texParameterf = function texParameterf(target, pname, param) {
+safep.texParameterf = function texParameterf(target, pname, param) {
   if (!(arguments.length === 3 && typeof target === "number" && typeof pname === "number" && typeof param === "number")) {
     throw new TypeError('Expected texParameterf(number target, number pname, number param)');
   }
-  return _texParameterf.call(this, target, pname, param);
+  return basep.texParameterf.call(this, target, pname, param);
 }
 
-var _texParameteri = gl.texParameteri;
-gl.texParameteri = function texParameteri(target, pname, param) {
+safep.texParameteri = function texParameteri(target, pname, param) {
   if (!(arguments.length === 3 && typeof target === "number" && typeof pname === "number" && typeof param === "number")) {
     throw new TypeError('Expected texParameteri(number target, number pname, number param)');
   }
-  return _texParameteri.call(this, target, pname, param);
+  return basep.texParameteri.call(this, target, pname, param);
 }
 
-var _texSubImage2D = gl.texSubImage2D;
-gl.texSubImage2D = function texSubImage2D(target, level, xoffset, yoffset, width, height, format, type, pixels) {
+safep.texSubImage2D = function texSubImage2D(target, level, xoffset, yoffset, width, height, format, type, pixels) {
   if (!(arguments.length === 9 && typeof target === "number" && typeof level === "number" && 
       typeof xoffset === "number" && typeof yoffset === "number" && 
       typeof width === "number" && typeof height === "number" && 
@@ -871,255 +791,224 @@ gl.texSubImage2D = function texSubImage2D(target, level, xoffset, yoffset, width
       (pixels==null || typeof pixels === "object"))) {
     throw new TypeError('Expected texSubImage2D(number target, number level, number xoffset, number yoffset, number width, number height, number format, number type, ArrayBufferView pixels)');
   }
-  return _texSubImage2D.call(this, target, level, xoffset, yoffset, width, height, format, type, pixels);
+  return basep.texSubImage2D.call(this, target, level, xoffset, yoffset, width, height, format, type, pixels);
 }
 
-var _uniform1f = gl.uniform1f;
-gl.uniform1f = function uniform1f(location, x) {
-  if (!(arguments.length === 2 && (location === null || location instanceof gl.WebGLUniformLocation) && (typeof x === "number" || typeof x === "boolean"))) {
+safep.uniform1f = function uniform1f(location, x) {
+  if (!(arguments.length === 2 && (location === null || location instanceof WebGLUniformLocation) && (typeof x === "number" || typeof x === "boolean"))) {
     throw new TypeError('Expected uniform1f(WebGLUniformLocation location, number x)');
   }
-  return _uniform1f.call(this, location ? location._ : 0, x);
+  return basep.uniform1f.call(this, location ? location._ : 0, x);
 }
 
-var _uniform1fv = gl.uniform1fv;
-gl.uniform1fv = function uniform1fv(location, v) {
-  if (!(arguments.length === 2 && (location === null || location instanceof gl.WebGLUniformLocation) && typeof v === "object")) {
+safep.uniform1fv = function uniform1fv(location, v) {
+  if (!(arguments.length === 2 && (location === null || location instanceof WebGLUniformLocation) && typeof v === "object")) {
     throw new TypeError('Expected uniform1fv(WebGLUniformLocation location, FloatArray v)');
   }
-  return _uniform1fv.call(this, location ? location._ : 0, asFloatArray(v));
+  return basep.uniform1fv.call(this, location ? location._ : 0, asFloatArray(v));
 }
 
-var _uniform1i = gl.uniform1i;
-gl.uniform1i = function uniform1i(location, x) {
-  if (!(arguments.length === 2 && (location === null || location instanceof gl.WebGLUniformLocation) && (typeof x === "number" || typeof x ==="boolean"))) {
+safep.uniform1i = function uniform1i(location, x) {
+  if (!(arguments.length === 2 && (location === null || location instanceof WebGLUniformLocation) && (typeof x === "number" || typeof x ==="boolean"))) {
     throw new TypeError('Expected uniform1i(WebGLUniformLocation location, number x)');
   }
   if(typeof x === "boolean")
     x= x ? 1 : 0;
-  return _uniform1i.call(this, location ? location._ : 0, x);
+  return basep.uniform1i.call(this, location ? location._ : 0, x);
 }
 
-var _uniform1iv = gl.uniform1iv;
-gl.uniform1iv = function uniform1iv(location, v) {
-  if (!(arguments.length === 2 && (location === null || location instanceof gl.WebGLUniformLocation) && typeof v === "object")) {
+safep.uniform1iv = function uniform1iv(location, v) {
+  if (!(arguments.length === 2 && (location === null || location instanceof WebGLUniformLocation) && typeof v === "object")) {
     throw new TypeError('Expected uniform1iv(WebGLUniformLocation location, Int32Array v)');
   }
-  return _uniform1iv.call(this, location ? location._ : 0, asInt32Array(v));
+  return basep.uniform1iv.call(this, location ? location._ : 0, asInt32Array(v));
 }
 
-var _uniform2f = gl.uniform2f;
-gl.uniform2f = function uniform2f(location, x, y) {
-  if (!(arguments.length === 3 && (location === null || location instanceof gl.WebGLUniformLocation) && typeof x === "number" && typeof y === "number")) {
+safep.uniform2f = function uniform2f(location, x, y) {
+  if (!(arguments.length === 3 && (location === null || location instanceof WebGLUniformLocation) && typeof x === "number" && typeof y === "number")) {
     throw new TypeError('Expected uniform2f(WebGLUniformLocation location, number x, number y)');
   }
-  return _uniform2f.call(this, location ? location._ : 0, x, y);
+  return basep.uniform2f.call(this, location ? location._ : 0, x, y);
 }
 
-var _uniform2fv = gl.uniform2fv;
-gl.uniform2fv = function uniform2fv(location, v) {
-  if (!(arguments.length === 2 && (location === null || location instanceof gl.WebGLUniformLocation) && typeof v === "object")) {
+safep.uniform2fv = function uniform2fv(location, v) {
+  if (!(arguments.length === 2 && (location === null || location instanceof WebGLUniformLocation) && typeof v === "object")) {
     throw new TypeError('Expected uniform2fv(WebGLUniformLocation location, FloatArray v)');
   }
-  return _uniform2fv.call(this, location ? location._ : 0, asFloatArray(v));
+  return basep.uniform2fv.call(this, location ? location._ : 0, asFloatArray(v));
 }
 
-var _uniform2i = gl.uniform2i;
-gl.uniform2i = function uniform2i(location, x, y) {
-  if (!(arguments.length === 3 && (location === null || location instanceof gl.WebGLUniformLocation) && typeof x === "number" && typeof y === "number")) {
+safep.uniform2i = function uniform2i(location, x, y) {
+  if (!(arguments.length === 3 && (location === null || location instanceof WebGLUniformLocation) && typeof x === "number" && typeof y === "number")) {
     throw new TypeError('Expected uniform2i(WebGLUniformLocation location, number x, number y)');
   }
-  return _uniform2i.call(this, location ? location._ : 0, x, y);
+  return basep.uniform2i.call(this, location ? location._ : 0, x, y);
 }
 
-var _uniform2iv = gl.uniform2iv;
-gl.uniform2iv = function uniform2iv(location, v) {
-  if (!(arguments.length === 2 && (location === null || location instanceof gl.WebGLUniformLocation) && typeof v === "object")) {
+safep.uniform2iv = function uniform2iv(location, v) {
+  if (!(arguments.length === 2 && (location === null || location instanceof WebGLUniformLocation) && typeof v === "object")) {
     throw new TypeError('Expected uniform2iv(WebGLUniformLocation location, Int32Array v)');
   }
-  return _uniform2iv.call(this, location ? location._ : 0, asInt32Array(v));
+  return basep.uniform2iv.call(this, location ? location._ : 0, asInt32Array(v));
 }
 
-var _uniform3f = gl.uniform3f;
-gl.uniform3f = function uniform3f(location, x, y, z) {
-  if (!(arguments.length === 4 && (location === null || location instanceof gl.WebGLUniformLocation) && typeof x === "number" && typeof y === "number" && typeof z === "number")) {
+safep.uniform3f = function uniform3f(location, x, y, z) {
+  if (!(arguments.length === 4 && (location === null || location instanceof WebGLUniformLocation) && typeof x === "number" && typeof y === "number" && typeof z === "number")) {
     throw new TypeError('Expected uniform3f(WebGLUniformLocation location, number x, number y, number z)');
   }
-  return _uniform3f.call(this, location ? location._ : 0, x, y, z);
+  return basep.uniform3f.call(this, location ? location._ : 0, x, y, z);
 }
 
-var _uniform3fv = gl.uniform3fv;
-gl.uniform3fv = function uniform3fv(location, v) {
-  if (!(arguments.length === 2 && (location === null || location instanceof gl.WebGLUniformLocation) && typeof v === "object")) {
+safep.uniform3fv = function uniform3fv(location, v) {
+  if (!(arguments.length === 2 && (location === null || location instanceof WebGLUniformLocation) && typeof v === "object")) {
     throw new TypeError('Expected uniform3fv(WebGLUniformLocation location, FloatArray v)');
   }
-  return _uniform3fv.call(this, location ? location._ : 0, asFloatArray(v));
+  return basep.uniform3fv.call(this, location ? location._ : 0, asFloatArray(v));
 }
 
-var _uniform3i = gl.uniform3i;
-gl.uniform3i = function uniform3i(location, x, y, z) {
-  if (!(arguments.length === 4 && (location === null || location instanceof gl.WebGLUniformLocation) && typeof x === "number" && typeof y === "number" && typeof z === "number")) {
+safep.uniform3i = function uniform3i(location, x, y, z) {
+  if (!(arguments.length === 4 && (location === null || location instanceof WebGLUniformLocation) && typeof x === "number" && typeof y === "number" && typeof z === "number")) {
     throw new TypeError('Expected uniform3i(WebGLUniformLocation location, number x, number y, number z)');
   }
-  return _uniform3i.call(this, location ? location._ : 0, x, y, z);
+  return basep.uniform3i.call(this, location ? location._ : 0, x, y, z);
 }
 
-var _uniform3iv = gl.uniform3iv;
-gl.uniform3iv = function uniform3iv(location, x) {
-  if (!(arguments.length === 2 && (location === null || location instanceof gl.WebGLUniformLocation) && typeof x === "object")) {
+safep.uniform3iv = function uniform3iv(location, x) {
+  if (!(arguments.length === 2 && (location === null || location instanceof WebGLUniformLocation) && typeof x === "object")) {
     throw new TypeError('Expected uniform3iv(WebGLUniformLocation location, Int32Array x)');
   }
-  return _uniform3iv.call(this, location ? location._ : 0, asInt32Array(x));
+  return basep.uniform3iv.call(this, location ? location._ : 0, asInt32Array(x));
 }
 
-var _uniform4f = gl.uniform4f;
-gl.uniform4f = function uniform4f(location, x, y, z, w) {
-  if (!(arguments.length === 5 && (location === null || location instanceof gl.WebGLUniformLocation) && typeof x === "number" && typeof y === "number" && typeof z === "number" && typeof w === "number")) {
+safep.uniform4f = function uniform4f(location, x, y, z, w) {
+  if (!(arguments.length === 5 && (location === null || location instanceof WebGLUniformLocation) && typeof x === "number" && typeof y === "number" && typeof z === "number" && typeof w === "number")) {
     throw new TypeError('Expected uniform4f(WebGLUniformLocation location, number x, number y, number z, number w)');
   }
-  return _uniform4f.call(this, location ? location._ : 0, x, y, z, w);
+  return basep.uniform4f.call(this, location ? location._ : 0, x, y, z, w);
 }
 
-var _uniform4fv = gl.uniform4fv;
-gl.uniform4fv = function uniform4fv(location, v) {
-  if (!(arguments.length === 2 && (location === null || location instanceof gl.WebGLUniformLocation) && typeof v === "object")) {
+safep.uniform4fv = function uniform4fv(location, v) {
+  if (!(arguments.length === 2 && (location === null || location instanceof WebGLUniformLocation) && typeof v === "object")) {
     throw new TypeError('Expected uniform4fv(WebGLUniformLocation location, FloatArray v)');
   }
-  return _uniform4fv.call(this, location ? location._ : 0, asFloatArray(v));
+  return basep.uniform4fv.call(this, location ? location._ : 0, asFloatArray(v));
 }
 
-var _uniform4i = gl.uniform4i;
-gl.uniform4i = function uniform4i(location, x, y, z, w) {
-  if (!(arguments.length === 5 && (location === null || location instanceof gl.WebGLUniformLocation) && typeof x === "number" && typeof y === "number" && typeof z === "number" && typeof w === "number")) {
+safep.uniform4i = function uniform4i(location, x, y, z, w) {
+  if (!(arguments.length === 5 && (location === null || location instanceof WebGLUniformLocation) && typeof x === "number" && typeof y === "number" && typeof z === "number" && typeof w === "number")) {
     throw new TypeError('Expected uniform4i(WebGLUniformLocation location, number x, number y, number z, number w)');
   }
-  return _uniform4i.call(this, location ? location._ : 0, x, y, z, w);
+  return basep.uniform4i.call(this, location ? location._ : 0, x, y, z, w);
 }
 
-var _uniform4iv = gl.uniform4iv;
-gl.uniform4iv = function uniform4iv(location, x) {
-  if (!(arguments.length === 2 && (location === null || location instanceof gl.WebGLUniformLocation) && typeof x === "object")) {
+safep.uniform4iv = function uniform4iv(location, x) {
+  if (!(arguments.length === 2 && (location === null || location instanceof WebGLUniformLocation) && typeof x === "object")) {
     throw new TypeError('Expected uniform4iv(WebGLUniformLocation location, Int32Array x)');
   }
-  return _uniform4iv.call(this, location ? location._ : 0, asInt32Array(x));
+  return basep.uniform4iv.call(this, location ? location._ : 0, asInt32Array(x));
 }
 
-var _uniformMatrix2fv = gl.uniformMatrix2fv;
-gl.uniformMatrix2fv = function uniformMatrix2fv(location, transpose, value) {
-  if (!(arguments.length === 3 && (location === null || location instanceof gl.WebGLUniformLocation) && typeof transpose === "boolean" && typeof value === "object")) {
+safep.uniformMatrix2fv = function uniformMatrix2fv(location, transpose, value) {
+  if (!(arguments.length === 3 && (location === null || location instanceof WebGLUniformLocation) && typeof transpose === "boolean" && typeof value === "object")) {
     throw new TypeError('Expected uniformMatrix2fv(WebGLUniformLocation location, boolean transpose, FloatArray value)');
   }
-  return _uniformMatrix2fv.call(this, location ? location._ : 0, transpose, asFloatArray(value));
+  return basep.uniformMatrix2fv.call(this, location ? location._ : 0, transpose, asFloatArray(value));
 }
 
-var _uniformMatrix3fv = gl.uniformMatrix3fv;
-gl.uniformMatrix3fv = function uniformMatrix3fv(location, transpose, value) {
-  if (!(arguments.length === 3 && (location === null || location instanceof gl.WebGLUniformLocation) && typeof transpose === "boolean" && typeof value === "object")) {
+safep.uniformMatrix3fv = function uniformMatrix3fv(location, transpose, value) {
+  if (!(arguments.length === 3 && (location === null || location instanceof WebGLUniformLocation) && typeof transpose === "boolean" && typeof value === "object")) {
     throw new TypeError('Expected uniformMatrix3fv(WebGLUniformLocation location, boolean transpose, FloatArray value)');
   }
-  return _uniformMatrix3fv.call(this, location ? location._ : 0, transpose, asFloatArray(value));
+  return basep.uniformMatrix3fv.call(this, location ? location._ : 0, transpose, asFloatArray(value));
 }
 
-var _uniformMatrix4fv = gl.uniformMatrix4fv;
-gl.uniformMatrix4fv = function uniformMatrix4fv(location, transpose, value) {
-  if (!(arguments.length === 3 && (location === null || location instanceof gl.WebGLUniformLocation) && typeof transpose === "boolean" && typeof value === "object")) {
+safep.uniformMatrix4fv = function uniformMatrix4fv(location, transpose, value) {
+  if (!(arguments.length === 3 && (location === null || location instanceof WebGLUniformLocation) && typeof transpose === "boolean" && typeof value === "object")) {
     throw new TypeError('Expected uniformMatrix4fv(WebGLUniformLocation location, boolean transpose, FloatArray value)');
   }
-  return _uniformMatrix4fv.call(this, location ? location._ : 0, transpose, asFloatArray(value));
+  return basep.uniformMatrix4fv.call(this, location ? location._ : 0, transpose, asFloatArray(value));
 }
 
-var _useProgram = gl.useProgram;
-gl.useProgram = function useProgram(program) {
-  if (!(arguments.length === 1 && (program === null || program instanceof gl.WebGLProgram))) {
+safep.useProgram = function useProgram(program) {
+  if (!(arguments.length === 1 && (program === null || program instanceof WebGLProgram))) {
     throw new TypeError('Expected useProgram(WebGLProgram program)');
   }
-  return _useProgram.call(this, program ? program._ : 0);
+  return basep.useProgram.call(this, program ? program._ : 0);
 }
 
-var _validateProgram = gl.validateProgram;
-gl.validateProgram = function validateProgram(program) {
-  if (!(arguments.length === 1 && (program === null || program instanceof gl.WebGLProgram))) {
+safep.validateProgram = function validateProgram(program) {
+  if (!(arguments.length === 1 && (program === null || program instanceof WebGLProgram))) {
     throw new TypeError('Expected validateProgram(WebGLProgram program)');
   }
-  return _validateProgram.call(this, program ? program._ : 0);
+  return basep.validateProgram.call(this, program ? program._ : 0);
 }
 
-var _vertexAttrib1f = gl.vertexAttrib1f;
-gl.vertexAttrib1f = function vertexAttrib1f(indx, x) {
+safep.vertexAttrib1f = function vertexAttrib1f(indx, x) {
   if (!(arguments.length === 2 && typeof indx === "number" && typeof x === "number")) {
     throw new TypeError('Expected vertexAttrib1f(number indx, number x)');
   }
-  return _vertexAttrib1f.call(this, indx, x);
+  return basep.vertexAttrib1f.call(this, indx, x);
 }
 
-var _vertexAttrib1fv = gl.vertexAttrib1fv;
-gl.vertexAttrib1fv = function vertexAttrib1fv(indx, values) {
+safep.vertexAttrib1fv = function vertexAttrib1fv(indx, values) {
   if (!(arguments.length === 2 && typeof indx === "number" && typeof values === "object")) {
     throw new TypeError('Expected vertexAttrib1fv(number indx, FloatArray values)');
   }
-  return _vertexAttrib1fv.call(this, indx, asFloatArray(values));
+  return basep.vertexAttrib1fv.call(this, indx, asFloatArray(values));
 }
 
-var _vertexAttrib2f = gl.vertexAttrib2f;
-gl.vertexAttrib2f = function vertexAttrib2f(indx, x, y) {
+safep.vertexAttrib2f = function vertexAttrib2f(indx, x, y) {
   if (!(arguments.length === 3 && typeof indx === "number" && typeof x === "number" && typeof y === "number")) {
     throw new TypeError('Expected vertexAttrib2f(number indx, number x, number y)');
   }
-  return _vertexAttrib2f.call(this, indx, x, y);
+  return basep.vertexAttrib2f.call(this, indx, x, y);
 }
 
-var _vertexAttrib2fv = gl.vertexAttrib2fv;
-gl.vertexAttrib2fv = function vertexAttrib2fv(indx, values) {
+safep.vertexAttrib2fv = function vertexAttrib2fv(indx, values) {
   if (!(arguments.length === 2 && typeof indx === "number" && typeof values === "object")) {
     throw new TypeError('Expected vertexAttrib2fv(number indx, FloatArray values)');
   }
-  return _vertexAttrib2fv.call(this, indx, asFloatArray(values));
+  return basep.vertexAttrib2fv.call(this, indx, asFloatArray(values));
 }
 
-var _vertexAttrib3f = gl.vertexAttrib3f;
-gl.vertexAttrib3f = function vertexAttrib3f(indx, x, y, z) {
+safep.vertexAttrib3f = function vertexAttrib3f(indx, x, y, z) {
   if (!(arguments.length === 4 && typeof indx === "number" && typeof x === "number" && typeof y === "number" && typeof z === "number")) {
     throw new TypeError('Expected vertexAttrib3f(number indx, number x, number y, number z)');
   }
-  return this._vertexAttrib3f(indx, x, y, z);
+  return basep.vertexAttrib3f(indx, x, y, z);
 }
 
-var _vertexAttrib3fv = gl.vertexAttrib3fv;
-gl.vertexAttrib3fv = function vertexAttrib3fv(indx, values) {
+safep.vertexAttrib3fv = function vertexAttrib3fv(indx, values) {
   if (!(arguments.length === 2 && typeof indx === "number" && typeof values === "object")) {
     throw new TypeError('Expected vertexAttrib3fv(number indx, FloatArray values)');
   }
-  return _vertexAttrib3fv.call(this, indx, asFloatArray(values));
+  return basep.vertexAttrib3fv.call(this, indx, asFloatArray(values));
 }
 
-var _vertexAttrib4f = gl.vertexAttrib4f;
-gl.vertexAttrib4f = function vertexAttrib4f(indx, x, y, z, w) {
+safep.vertexAttrib4f = function vertexAttrib4f(indx, x, y, z, w) {
   if (!(arguments.length === 5 && typeof indx === "number" && typeof x === "number" && typeof y === "number" && typeof z === "number" && typeof w === "number")) {
     throw new TypeError('Expected vertexAttrib4f(number indx, number x, number y, number z, number w)');
   }
-  return _vertexAttrib4f.call(this, indx, x, y, z, w);
+  return basep.vertexAttrib4f.call(this, indx, x, y, z, w);
 }
 
-var _vertexAttrib4fv = gl.vertexAttrib4fv;
-gl.vertexAttrib4fv = function vertexAttrib4fv(indx, values) {
+safep.vertexAttrib4fv = function vertexAttrib4fv(indx, values) {
   if (!(arguments.length === 2 && typeof indx === "number" && typeof values === "object")) {
     throw new TypeError('Expected vertexAttrib4fv(number indx, FloatArray values)');
   }
-  return _vertexAttrib4fv.call(this, indx, asFloatArray(values));
+  return basep.vertexAttrib4fv.call(this, indx, asFloatArray(values));
 }
 
-var _vertexAttribPointer = gl.vertexAttribPointer;
-gl.vertexAttribPointer = function vertexAttribPointer(indx, size, type, normalized, stride, offset) {
+safep.vertexAttribPointer = function vertexAttribPointer(indx, size, type, normalized, stride, offset) {
   if (!(arguments.length === 6 && typeof indx === "number" && typeof size === "number" && typeof type === "number" && (typeof normalized === "boolean" || typeof normalized === "number") && typeof stride === "number" && typeof offset === "number")) {
     throw new TypeError('Expected vertexAttribPointer(number indx, number size, number type, boolean normalized, number stride, number offset)');
   }
-  return _vertexAttribPointer.call(this, indx, size, type, normalized, stride, offset);
+  return basep.vertexAttribPointer.call(this, indx, size, type, normalized, stride, offset);
 }
 
-var _viewport = gl.viewport;
-gl.viewport = function viewport(x, y, width, height) {
+safep.viewport = function viewport(x, y, width, height) {
   if (!(arguments.length === 4 && typeof x === "number" && typeof y === "number" && typeof width === "number" && typeof height === "number")) {
     throw new TypeError('Expected viewport(number x, number y, number width, number height)');
   }
-  return _viewport.call(this, x, y, width, height);
+  return basep.viewport.call(this, x, y, width, height);
 }
