@@ -15,6 +15,16 @@ gl.WebGLTexture=function (_) { this._ = _; }
 gl.WebGLActiveInfo=function (_) { this._=_; this.size=_.size; this.type=_.type; this.name=_.name; }
 gl.WebGLUniformLocation=function (_) { this._ = _; }
 
+
+function wrapObject(val, type) {
+  if(val == -1 || val == null)
+    return null;
+
+  var obj = Object.create(type.prototype);
+  type.call(obj, val);
+  return obj;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
 var _getSupportedExtensions = gl.getSupportedExtensions;
@@ -220,7 +230,7 @@ gl.createBuffer = function createBuffer() {
   if (!(arguments.length === 0)) {
     throw new TypeError('Expected createBuffer()');
   }
-  return new gl.WebGLBuffer(_createBuffer.call(this));
+  return wrapObject(_createBuffer.call(this), gl.WebGLBuffer);
 }
 
 var _createFramebuffer = gl.createFramebuffer;
@@ -228,7 +238,7 @@ gl.createFramebuffer = function () {
   if (!(arguments.length === 0)) {
     throw new TypeError('Expected createFramebuffer()');
   }
-  return new gl.WebGLFramebuffer(_createFramebuffer.call(this));
+  return wrapObject(_createFramebuffer.call(this), gl.WebGLFramebuffer);
 }
 
 var _createProgram = gl.createProgram;
@@ -236,7 +246,7 @@ gl.createProgram = function createProgram() {
   if (!(arguments.length === 0)) {
     throw new TypeError('Expected createProgram()');
   }
-  return new gl.WebGLProgram(_createProgram.call(this));
+  return wrapObject(_createProgram.call(this), gl.WebGLProgram);
 }
 
 var _createRenderbuffer = gl.createRenderbuffer;
@@ -244,7 +254,7 @@ gl.createRenderbuffer = function createRenderbuffer() {
   if (!(arguments.length === 0)) {
     throw new TypeError('Expected createRenderbuffer()');
   }
-  return new gl.WebGLRenderbuffer(_createRenderbuffer.call(this));
+  return wrapObject(_createRenderbuffer.call(this), gl.WebGLRenderbuffer);
 }
 
 var _createShader = gl.createShader;
@@ -252,7 +262,7 @@ gl.createShader = function createShader(type) {
   if (!(arguments.length === 1 && typeof type === "number")) {
     throw new TypeError('Expected createShader(number type)');
   }
-  return new gl.WebGLShader(_createShader.call(this, type));
+  return wrapObject(_createShader.call(this, type), gl.WebGLShader);
 }
 
 var _createTexture = gl.createTexture;
@@ -260,7 +270,7 @@ gl.createTexture = function createTexture() {
   if (!(arguments.length === 0)) {
     throw new TypeError('Expected createTexture()');
   }
-  return new gl.WebGLTexture(_createTexture.call(this));
+  return wrapObject(_createTexture.call(this), gl.WebGLTexture);
 }
 
 var _cullFace = gl.cullFace;
@@ -452,7 +462,7 @@ gl.getActiveAttrib = function getActiveAttrib(program, index) {
   if (!(arguments.length === 2 && (program === null || program instanceof gl.WebGLProgram) && typeof index === "number")) {
     throw new TypeError('Expected getActiveAttrib(WebGLProgram program, number index)');
   }
-  return new gl.WebGLActiveInfo(_getActiveAttrib.call(this, program ? program._ : 0, index));
+  return wrapObject(_getActiveAttrib.call(this, program ? program._ : 0, index), gl.WebGLActiveInfo);
 }
 
 var _getActiveUniform = gl.getActiveUniform;
@@ -460,7 +470,7 @@ gl.getActiveUniform = function getActiveUniform(program, index) {
   if (!(arguments.length === 2 && (program === null || program instanceof gl.WebGLProgram) && typeof index === "number")) {
     throw new TypeError('Expected getActiveUniform(WebGLProgram program, number index)');
   }
-  return new gl.WebGLActiveInfo(_getActiveUniform.call(this, program ? program._ : 0, index));
+  return wrapObject(_getActiveUniform.call(this, program ? program._ : 0, index), gl.WebGLActiveInfo);
 }
 
 var _getAttachedShaders = gl.getAttachedShaders;
@@ -580,7 +590,7 @@ gl.getUniformLocation = function getUniformLocation(program, name) {
   if (!(arguments.length === 2 && (program === null || program instanceof gl.WebGLProgram) && typeof name === "string")) {
     throw new TypeError('Expected getUniformLocation(WebGLProgram program, string name)');
   }
-  return new gl.WebGLUniformLocation(_getUniformLocation.call(this, program ? program._ : 0, name));
+  return wrapObject(_getUniformLocation.call(this, program ? program._ : 0, name), gl.WebGLUniformLocation);
 }
 
 var _getVertexAttrib = gl.getVertexAttrib;
