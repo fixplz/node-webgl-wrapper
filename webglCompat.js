@@ -5,8 +5,8 @@ var util = require('util')
 module.exports = function wrapCompat(WebGL) {
 
 util.inherits(WebGLCompat, WebGL)
-function WebGLCompat(w, h) {
-  var obj = new WebGL(w, h);
+function WebGLCompat(a1,a2,a3,a4,a5,a6,a7,a8,a9) {
+  var obj = new WebGL(a1,a2,a3,a4,a5,a6,a7,a8,a9);
   obj.__proto__ = WebGLCompat.prototype;
   return obj;
 }

@@ -8,8 +8,8 @@ module.exports = function wrapWebGL(WebGLBase) {
 var webgl = {}
 
 util.inherits(WebGLSafe, WebGLBase)
-function WebGLSafe(w, h) {
-  var obj = new WebGLBase(w, h);
+function WebGLSafe(a1,a2,a3,a4,a5,a6,a7,a8,a9) {
+  var obj = new WebGLBase(a1,a2,a3,a4,a5,a6,a7,a8,a9);
   obj.__proto__ = WebGLSafe.prototype;
   return obj;
 }
