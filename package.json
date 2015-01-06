@@ -1,0 +1,5 @@
+{
+  "name": "node-webgl-wrapper",
+  "version": "0.0.0",
+  "main": "webgl.js"
+}
