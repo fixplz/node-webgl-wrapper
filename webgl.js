@@ -2,8 +2,12 @@
 
 var util = require('util')
 
-var WebGLBase = require('./build/Release/webgl.node').WebGLContext;
-exports.WebGLBase = WebGLBase;
+
+module.exports = function wrapWebGL(WebGLBase) {
+
+var webgl = {}
+
+webgl.WebGLBase = WebGLBase;
 
 
 util.inherits(WebGLSafe, WebGLBase)
@@ -13,7 +17,7 @@ function WebGLSafe(w, h) {
   return obj;
 }
 
-exports.WebGLSafe = WebGLSafe;
+webgl.WebGLSafe = WebGLSafe;
 
 function WebGLProgram(_) { this._ = _; }
 function WebGLShader(_) { this._ = _; }
@@ -24,14 +28,14 @@ function WebGLTexture(_) { this._ = _; }
 function WebGLActiveInfo(_) { this._=_; this.size=_.size; this.type=_.type; this.name=_.name; }
 function WebGLUniformLocation(_) { this._ = _; }
 
-exports.WebGLProgram = WebGLProgram;
-exports.WebGLShader = WebGLShader;
-exports.WebGLBuffer = WebGLBuffer;
-exports.WebGLFramebuffer = WebGLFramebuffer;
-exports.WebGLRenderbuffer = WebGLRenderbuffer;
-exports.WebGLTexture = WebGLTexture;
-exports.WebGLActiveInfo = WebGLActiveInfo;
-exports.WebGLUniformLocation = WebGLUniformLocation;
+webgl.WebGLProgram = WebGLProgram;
+webgl.WebGLShader = WebGLShader;
+webgl.WebGLBuffer = WebGLBuffer;
+webgl.WebGLFramebuffer = WebGLFramebuffer;
+webgl.WebGLRenderbuffer = WebGLRenderbuffer;
+webgl.WebGLTexture = WebGLTexture;
+webgl.WebGLActiveInfo = WebGLActiveInfo;
+webgl.WebGLUniformLocation = WebGLUniformLocation;
 
 
 function wrapObject(val, type) {
@@ -1012,4 +1016,8 @@ safep.viewport = function viewport(x, y, width, height) {
     throw new TypeError('Expected viewport(number x, number y, number width, number height)');
   }
   return basep.viewport.call(this, x, y, width, height);
+}
+
+return webgl
+
 }
