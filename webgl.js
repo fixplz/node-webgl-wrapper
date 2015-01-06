@@ -737,27 +737,28 @@ safep.stencilOpSeparate = function stencilOpSeparate(face, fail, zfail, zpass) {
   return basep.stencilOpSeparate.call(this, face, fail, zfail, zpass);
 }
 
-safep.texImage2D = function texImage2D(target, level, internalformat, width, height, border, format, type, pixels) {
+safep.texImage2D = function texImage2D() {
   if(!(arguments.length == 9 || arguments.length == 6)) {
     throw new TypeError('Expected texImage2D(number target, number level, number internalformat, number width, number height, number border, number format, number type, ArrayBufferView pixels) \
         or texImage2D(number target, number level, number internalformat, number format, number type, Image pixels)');
   }
 
   if (arguments.length == 6) {
-    // width is now format, height is now type, and border is now pixels
+    var target = arguments[0], level = arguments[1], internalformat = arguments[2]
+    var format = arguments[3], type = arguments[4], source = arguments[5]
     if(!(
         typeof target === "number" && 
         typeof level === "number" && typeof internalformat === "number" && 
-        typeof width === "number" && typeof height === "number" && 
-        border==null)) {
+        typeof format === "number" && typeof type === "number" && 
+        (source==null || typeof source === "object"))) {
       throw new TypeError('Expected texImage2D(number target, number level, number internalformat, number format, number type, Image pixels)');
     }
-    pixels=border;
-    type=height;
-    format=width;
     return basep.texImage2D.call(this, target, level, internalformat, pixels.width, pixels.height, 0, format, type, pixels);
   }
   else if (arguments.length == 9) {
+    var target = arguments[0], level = arguments[1], internalformat = arguments[2]
+    var width = arguments[3], height = arguments[4], border = arguments[5]
+    var format = arguments[6], type = arguments[7], pixels = arguments[8]
     if(!(typeof target === "number" && 
         typeof level === "number" && typeof internalformat === "number" && 
         typeof width === "number" && typeof height === "number" && typeof border === "number" && 
