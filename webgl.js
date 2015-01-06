@@ -7,9 +7,6 @@ module.exports = function wrapWebGL(WebGLBase) {
 
 var webgl = {}
 
-webgl.WebGLBase = WebGLBase;
-
-
 util.inherits(WebGLSafe, WebGLBase)
 function WebGLSafe(w, h) {
   var obj = new WebGLBase(w, h);
@@ -17,7 +14,13 @@ function WebGLSafe(w, h) {
   return obj;
 }
 
+
+webgl.WebGLBase = WebGLBase;
 webgl.WebGLSafe = WebGLSafe;
+webgl.WebGL = WebGLSafe;
+webgl.WebGLCompat = require('./webglCompat')(WebGLSafe);
+
+/////////////////////////////////////////////////////////////
 
 function WebGLProgram(_) { this._ = _; }
 function WebGLShader(_) { this._ = _; }
