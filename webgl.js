@@ -765,7 +765,7 @@ safep.texImage2D = function texImage2D() {
       var pixels = source.data
     }
     else if(source != null) {
-      var pixels = source
+      var pixels = source.data || source
     }
     return basep.texImage2D.call(this, target, level, internalformat, source.width, source.height, 0, format, type, pixels);
   }
