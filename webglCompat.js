@@ -8,6 +8,10 @@ util.inherits(WebGLCompat, WebGL)
 function WebGLCompat(a1,a2,a3,a4,a5,a6,a7,a8,a9) {
   var obj = new WebGL(a1,a2,a3,a4,a5,a6,a7,a8,a9);
   obj.__proto__ = WebGLCompat.prototype;
+
+  obj._UNPACK_FLIP_Y_WEBGL = false;
+  obj._UNPACK_PREMULTIPLY_ALPHA_WEBGL = false;
+
   return obj;
 }
 
@@ -59,6 +63,59 @@ p.uniformMatrix4fv = function uniformMatrix4fv(location, transpose, value) {
   return basep.uniformMatrix4fv.call(this, location, transpose, value);
 }
 
+p.pixelStorei = function pixelStorei(pname, param) {
+
+  if(pname == this.UNPACK_FLIP_Y_WEBGL)
+    this._UNPACK_FLIP_Y_WEBGL = param;
+  else if(pname == this.UNPACK_PREMULTIPLY_ALPHA_WEBGL)
+    this._UNPACK_PREMULTIPLY_ALPHA_WEBGL = param;
+
+  return basep.pixelStorei.call(this, pname, param);
+}
+
+p.texImage2D = function texImage2D() {
+  if (arguments.length == 6) {
+    var target = arguments[0], level = arguments[1], internalformat = arguments[2]
+    var format = arguments[3], type = arguments[4], source = arguments[5]
+
+    if(source != null && source.getImageData) {
+      var source = source.getImageData(0, 0, source.width, source.height)
+      var pixels = source.data
+    }
+    else if(source != null) {
+      var pixels = source.data || source
+    }
+
+    if(this._UNPACK_FLIP_Y_WEBGL)
+      flipBuffer(pixels, source.width, source.height, format == this.RGBA ? true : false)
+  }
+  else if (arguments.length == 9) {
+    var target = arguments[0], level = arguments[1], internalformat = arguments[2]
+    var width = arguments[3], height = arguments[4], border = arguments[5]
+    var format = arguments[6], type = arguments[7], pixels = arguments[8]
+
+    if(this._UNPACK_FLIP_Y_WEBGL)
+      flipBuffer(pixels, width, height, format == this.RGBA ? true : false)
+  }
+
+  return basep.texImage2D.apply(this,arguments);
+}
+
 return WebGLCompat
 
+}
+
+function flipBuffer(buffer, width, height, alpha) {
+  var step = alpha ? 4 : 3
+
+  for (var y = 0; y < height / 2 | 0; ++y) {
+    for (var i = 0; i < width * step; ++i) {
+      var ix1 = y * width * step + i
+      var ix2 = (height - 1 - y) * width * step + i
+      var val1 = buffer[ix1]
+      var val2 = buffer[ix2]
+      buffer[ix2] = val1
+      buffer[ix1] = val2
+    }
+  }
 }
