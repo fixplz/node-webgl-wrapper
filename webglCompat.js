@@ -74,24 +74,25 @@ p.pixelStorei = function pixelStorei(pname, param) {
 }
 
 p.texImage2D = function texImage2D() {
-  if (arguments.length == 6) {
-    var format = arguments[3], source = arguments[5];
-
-    if(source != null && source.getImageData) {
-      var source = source.getImageData(0, 0, source.width, source.height)
-      var pixels = source.data
-    }
-    else if(source != null) {
-      var pixels = source.data || source
-    }
-    var width = source.width, height = source.height;
-  }
-  else if (arguments.length == 9) {
-    var width = arguments[3], height = arguments[4];
-    var format = arguments[6], pixels = arguments[8];
-  }
-
   if(this._UNPACK_FLIP_Y_WEBGL) {
+
+    if (arguments.length == 6) {
+      var format = arguments[3], source = arguments[5];
+
+      if(source != null && source.getImageData) {
+        var source = source.getImageData(0, 0, source.width, source.height)
+        var pixels = source.data
+      }
+      else if(source != null) {
+        var pixels = source.data || source
+      }
+      var width = source.width, height = source.height;
+    }
+    else if (arguments.length == 9) {
+      var width = arguments[3], height = arguments[4];
+      var format = arguments[6], pixels = arguments[8];
+    }
+    
     pixels = new Buffer(pixels);
     flipBuffer(pixels, width, height, format == this.RGBA ? true : false)
     if (arguments.length == 6)
