@@ -760,13 +760,7 @@ safep.texImage2D = function texImage2D() {
         (source==null || typeof source === "object"))) {
       throw new TypeError('Expected texImage2D(number target, number level, number internalformat, number format, number type, Image pixels)');
     }
-    if(source != null && source.getImageData) {
-      var source = source.getImageData(0, 0, source.width, source.height)
-      var pixels = source.data
-    }
-    else if(source != null) {
-      var pixels = source.data || source
-    }
+    pixels = source.data;
     return basep.texImage2D.call(this, target, level, internalformat, source.width, source.height, 0, format, type, pixels);
   }
   else if (arguments.length == 9) {

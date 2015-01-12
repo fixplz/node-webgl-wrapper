@@ -74,7 +74,6 @@ p.pixelStorei = function pixelStorei(pname, param) {
 }
 
 p.texImage2D = function texImage2D() {
-  if(this._UNPACK_FLIP_Y_WEBGL) {
 
     if (arguments.length == 6) {
       var format = arguments[3], source = arguments[5];
@@ -92,14 +91,18 @@ p.texImage2D = function texImage2D() {
       var width = arguments[3], height = arguments[4];
       var format = arguments[6], pixels = arguments[8];
     }
-    
+
+  if(this._UNPACK_FLIP_Y_WEBGL) {
     pixels = new Buffer(pixels);
     flipBuffer(pixels, width, height, format == this.RGBA ? true : false)
-    if (arguments.length == 6)
-      arguments[5] = {data:pixels, width:width, height:height};
-    else if(arguments.length == 9)
-      arguments[8] = pixels;
   }
+
+  if (arguments.length == 6)
+    arguments[5] = {data:pixels, width:width, height:height};
+  else if(arguments.length == 9)
+    arguments[8] = pixels;
+
+
   return basep.texImage2D.apply(this,arguments);
 }
 
