@@ -21,11 +21,21 @@ WebGLCompat.prototype.MAX_VERTEX_UNIFORM_VECTORS = 0x8DFB
 var p = WebGLCompat.prototype
 var basep = WebGL.prototype
 
+p.getSupportedExtensions = function getSupportedExtensions() {
+  if(this.disableExtensions) {
+    return [];
+  }
+  return ['OES_standard_derivatives'];
+}
+
 p.getExtension = function getExtension(name) {
   if(this.disableExtensions) {
     return null;
   }
-  return basep.getExtension.call(this, name);
+  if(name == 'OES_standard_derivatives') {
+    return {};
+  }
+  return null;
 }
 
 p.bindTexture = function bindTexture(target, texture) {
@@ -52,6 +62,7 @@ p.getParameter = function getParameter(pname) {
 p.shaderSource = function shaderSource(shader, source) {
   if(this.shaderCompat) {
     source = source.replace(/precision.*\n/g, '')
+    source = source.replace(/#extension GL_OES_standard_derivatives.*\n/g, '')
   }
   return basep.shaderSource.call(this, shader, source);
 }
